@@ -34,7 +34,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email_address'), unique=True)
     first_name = models.CharField(max_length=100, blank=False)
     last_name = models.CharField(max_length=100, blank=False)
-    other_name = models.CharField(max_length=100, blank=True, default=None)
+    other_name = models.CharField(max_length=100, blank=True, default=None, null=True)
     date_joined = models.DateTimeField(_('date_joined'), default=timezone.now)
     is_active = models.BooleanField(_('active'), default=False)
     is_staff = models.BooleanField(_('staff'), blank=False)
@@ -57,10 +57,36 @@ class Student(models.Model):
         ('mcb', 'MicroBiology'),
     )
     user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
-    mat_no = models.CharField(max_length=30, blank=True, null=True)
+    mat_no = models.CharField(max_length=30, blank=True, null=True, unique=True)
     department = models.CharField(choices=DEPARTMENT, blank=False, max_length=7)
-    level = models.CharField(max_length=6, blank=False)
+    level = models.IntegerField(blank=False)
     reg_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
+        return self.user.email
+
+class Non_AcademicStaff(models.Model):
+    DEPARTMENT = (
+        ('csc', 'Computer Science'),
+        ('bch', 'BioChemistry'),
+        ('mcb', 'MicroBiology'),
+    )
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    phone_number = models.CharField(max_length=30, blank=True, null=True)
+    department = models.CharField(choices=DEPARTMENT, blank=False, max_length=7)
+
+    def __str__(self) -> str:
+        return self.user.email
+
+class AcademicStaff(models.Model):
+    DEPARTMENT = (
+        ('csc', 'Computer Science'),
+        ('bch', 'BioChemistry'),
+        ('mcb', 'MicroBiology'),
+    )
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    phone_number = models.CharField(max_length=30, blank=True, null=True)
+    department = models.CharField(choices=DEPARTMENT, blank=False, max_length=7)
+
+    def __str__(self) -> str:
         return self.user.email
